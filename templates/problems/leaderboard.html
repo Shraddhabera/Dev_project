@@ -14,18 +14,14 @@
                             <th scope="col">Problems Solved</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="leaderboard-body">
                         {% for user in user_scores %}
                         <tr>
                             <td>
-                                {% if forloop.counter == 1 %}
-                                    🥇
-                                {% elif forloop.counter == 2 %}
-                                    🥈
-                                {% elif forloop.counter == 3 %}
-                                    🥉
-                                {% else %}
-                                    {{ forloop.counter }}
+                                {% if forloop.counter == 1 %} 🥇
+                                {% elif forloop.counter == 2 %} 🥈
+                                {% elif forloop.counter == 3 %} 🥉
+                                {% else %} {{ forloop.counter }}
                                 {% endif %}
                             </td>
                             <td class="fw-medium">{{ user.username }}</td>
@@ -42,4 +38,47 @@
         </div>
     </div>
 </div>
+
+<!-- JavaScript to update leaderboard -->
+<script>
+function fetchLeaderboard() {
+    fetch("{% url 'problems:leaderboard_api' %}")
+    .then(response => response.json())
+    .then(data => {
+        const tbody = document.getElementById('leaderboard-body');
+        tbody.innerHTML = '';  // Clear current rows
+
+        if (data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="3" class="text-muted">No users have solved any problems yet.</td>
+                </tr>
+            `;
+            return;
+        }
+
+        data.forEach((user, index) => {
+            let rankIcon = '';
+            if (index === 0) rankIcon = '🥇';
+            else if (index === 1) rankIcon = '🥈';
+            else if (index === 2) rankIcon = '🥉';
+            else rankIcon = index + 1;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${rankIcon}</td>
+                    <td class="fw-medium">${user.username}</td>
+                    <td><span class="badge bg-success px-3 py-2">${user.problems_solved}</span></td>
+                </tr>
+            `;
+        });
+    })
+    .catch(error => {
+        console.error("Failed to update leaderboard:", error);
+    });
+}
+
+// Poll every 10 seconds
+setInterval(fetchLeaderboard, 10000);
+</script>
 {% endblock %}

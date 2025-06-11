@@ -60,3 +60,16 @@ class Submission(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.problem.title} - {self.verdict}"
+    
+import os
+
+class TestCase(models.Model):
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name='testcases')
+    input_data = models.TextField(help_text="Enter the input for the test case")
+    expected_output = models.TextField(help_text="Enter the expected output")
+    is_sample = models.BooleanField(default=False, help_text="Is this a sample test case?")
+
+    def __str__(self):
+        return f"TestCase for {self.problem.title} (Sample: {self.is_sample})"
+
+

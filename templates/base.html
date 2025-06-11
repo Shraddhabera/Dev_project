@@ -13,7 +13,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Navbar styling */
         .navbar {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border-radius: 10px;
@@ -33,7 +32,6 @@
             color: #0d6efd !important;
         }
 
-        /* Problem card hover effect */
         .problem-card {
             margin-bottom: 20px;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -66,7 +64,7 @@
         <!-- Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4 px-4 py-3 rounded">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{% url 'problems:problem_list' %}">⚖️ Online Judge</a>
+                <a class="navbar-brand" href="{% url 'problems:problem_list' %}">⚖️ Nova Judge</a>
 
                 <div class="d-flex align-items-center">
                     {% if user.is_authenticated %}
@@ -74,10 +72,7 @@
                             👋 Hello, <strong>{{ user.username }}</strong>
                         </a>
                         <a class="nav-link" href="{% url 'problems:leaderboard' %}">🏆 Leaderboard</a>
-
-                        <!-- ✅ My Submissions Link -->
                         <a class="nav-link" href="{% url 'problems:user_submissions' %}">📄 My Submissions</a>
-
                         <a class="btn btn-outline-danger ms-2" href="{% url 'logout' %}">Logout</a>
                     {% else %}
                         <a class="btn btn-outline-primary me-2" href="{% url 'login' %}">Login</a>
@@ -102,5 +97,8 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Allow page-specific scripts -->
+    {% block scripts %}{% endblock %}
 </body>
 </html>
