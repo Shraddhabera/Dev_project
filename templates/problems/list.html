@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Problem List{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold mb-0">🧠 Problem List</h1>
+        {% if user.is_authenticated and user.is_teacher %}
+        <a href="{% url 'admin:problems_problem_add' %}" class="btn btn-outline-primary shadow-sm">
+            <i class="bi bi-plus-circle me-2"></i> Add New Problem
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="row g-4">
+        {% for problem in problems %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title fw-semibold text-primary text-truncate" title="{{ problem.title }}">
+                            <a href="{% url 'problems:problem_detail' problem.id %}" class="text-decoration-none text-primary">
+                                {{ problem.title }}
+                            </a>
+                        </h5>
+                        <span class="badge 
+                            {% if problem.difficulty == 'Easy' %} bg-success 
+                            {% elif problem.difficulty == 'Medium' %} bg-warning text-dark 
+                            {% else %} bg-danger 
+                            {% endif %}">
+                            {{ problem.difficulty }}
+                        </span>
+                    </div>
+
+                    <p class="text-muted small mb-3">
+                        👤 {{ problem.author.username }}<br>
+                        📅 {{ problem.created_at|date:"M d, Y" }}
+                    </p>
+
+                    <div class="mt-auto d-flex justify-content-between small text-secondary">
+                        <span>⏱ {{ problem.time_limit }}s</span>
+                        <span>💾 {{ problem.memory_limit }}MB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center shadow-sm">
+                🚫 No problems available yet.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

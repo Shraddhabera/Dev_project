@@ -1,0 +1,11 @@
+[
+  { "input": "2 3", "expected_output": "6" },
+  { "input": "4 5", "expected_output": "20" },
+  { "input": "9 0", "expected_output": "0" },
+  { "input": "-2 4", "expected_output": "-8" },
+  { "input": "-3 -7", "expected_output": "21" },
+  { "input": "1 100000", "expected_output": "100000" },
+  { "input": "123 456", "expected_output": "56088" },
+  { "input": "0 0", "expected_output": "0" },
+  { "input": "9999 9999", "expected_output": "99980001" }
+]

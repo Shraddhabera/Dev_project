@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ problem.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Title and Metadata -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="fw-bold">{{ problem.title }}</h1>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <span class="badge 
+                    {% if problem.difficulty == 'Easy' %}bg-success 
+                    {% elif problem.difficulty == 'Medium' %}bg-warning text-dark 
+                    {% else %}bg-danger{% endif %} px-3 py-2 fs-6">
+                    {{ problem.difficulty }}
+                </span>
+                <span class="text-muted small">
+                    🧑‍💻 Posted by <strong>{{ problem.author.username }}</strong> on {{ problem.created_at|date:"M d, Y" }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Description -->
+    <div class="card shadow-sm rounded mb-4">
+        <div class="card-body">
+            <h4 class="fw-semibold mb-3">📘 Description</h4>
+            <div class="text-muted">{{ problem.description|linebreaks }}</div>
+        </div>
+    </div>
+
+    <!-- Input/Output -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded mb-4">
+                <div class="card-body">
+                    <h5 class="fw-semibold">🔽 Input</h5>
+                    <div class="text-muted">{{ problem.input_description|linebreaks }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded mb-4">
+                <div class="card-body">
+                    <h5 class="fw-semibold">🔼 Output</h5>
+                    <div class="text-muted">{{ problem.output_description|linebreaks }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sample I/O -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded mb-4">
+                <div class="card-body">
+                    <h5 class="fw-semibold">📥 Sample Input</h5>
+                    <pre class="bg-light rounded p-3 border">{{ problem.sample_input }}</pre>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded mb-4">
+                <div class="card-body">
+                    <h5 class="fw-semibold">📤 Sample Output</h5>
+                    <pre class="bg-light rounded p-3 border">{{ problem.sample_output }}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if user.is_authenticated %}
+    <!-- Submission Form -->
+    <div class="card shadow-sm rounded mb-4">
+        <div class="card-body">
+            <h4 class="fw-semibold mb-3">📝 Submit Your Solution</h4>
+
+            <div class="mb-3">
+                <label for="language" class="form-label fw-medium">Language</label>
+                <select id="language" class="form-select">
+                    <option value="python">Python</option>
+                    <option value="cpp">C++</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="input" class="form-label fw-medium">Custom Input</label>
+                <textarea id="input" class="form-control" rows="3">{{ problem.sample_input }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="code" class="form-label fw-medium">Code</label>
+                <textarea id="code" class="form-control" rows="10">{{ default_code }}</textarea>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-primary" onclick="runCode()">▶️ Run Code</button>
+                <button type="button" class="btn btn-success" onclick="submitCode()">✅ Submit Code</button>
+                <button type="button" class="btn btn-info text-white" onclick="getAIReview()" id="ai-review-btn">🤖 Get AI Review</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Output & Verdict -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded mb-4">
+                <div class="card-body">
+                    <h5 class="fw-semibold">💻 Run Output</h5>
+                    <pre id="run-output" class="bg-light rounded p-3 border"></pre>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded mb-4">
+                <div class="card-body">
+                    <h5 class="fw-semibold">🎯 Submit Verdict</h5>
+                    <pre id="submit-output" class="bg-light rounded p-3 border"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Review -->
+    <div class="card shadow-sm rounded mb-4">
+        <div class="card-body">
+            <h5 class="fw-semibold">🧠 AI Code Review</h5>
+            <div id="ai-review-loading" class="d-none text-center my-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Generating AI review...</p>
+            </div>
+            <div id="ai-review-content" class="card-text mt-3"></div>
+        </div>
+    </div>
+    {% else %}
+        <a href="{% url 'login' %}?next={% url 'problems:problem_detail' problem.id %}" class="btn btn-primary">Login to Submit</a>
+    {% endif %}
+
+    <div class="text-end mt-4">
+        <a href="{% url 'problems:problem_list' %}" class="btn btn-outline-secondary">⬅️ Back to Problems</a>
+    </div>
+</div>
+
+<!-- Script block remains unchanged -->
+<!-- AJAX Script -->
+<script>
+function runCode() {
+    const code = document.getElementById("code").value;
+    const language = document.getElementById("language").value;
+    const custom_input = document.getElementById("input").value;
+
+    fetch("{% url 'problems:run_code_api' problem.id %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ code, custom_input, language })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("run-output").innerText = data.error ? "Error:\n" + data.error : data.output;
+    });
+}
+
+function submitCode() {
+    const code = document.getElementById("code").value;
+    const language = document.getElementById("language").value;
+    const btn = document.getElementById("submit-btn"); // Add reference to button
+    const output = document.getElementById("submit-output");
+
+    // Disable button during submission
+    btn.disabled = true;
+    output.innerText = "Submitting...";
+
+    fetch("{% url 'problems:submit_code_api' problem.id %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ code, language })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.error) {
+            output.innerText = "Error:\n" + data.error;
+        } else {
+            let verdictText = "";
+            if (data.verdicts && data.verdicts.length > 0) {
+                data.verdicts.forEach(v => {
+                    verdictText += `Test Case ${v.case}: ${v.verdict}\nYour Output: ${v.output}\n\n`;
+                });
+            }
+            verdictText += `Final Verdict: ${data.verdict || 'Unknown'}\nScore: ${data.score || 'N/A'}`;
+            output.innerText = verdictText;
+            
+            // Refresh submissions list if successful
+            setTimeout(() => {
+                window.location.href = "{% url 'problems:user_submissions' %}";
+            }, 2000);
+        }
+    })
+    .catch(error => {
+        output.innerText = "Submission failed:\n" + error.message;
+        console.error("Submission error:", error);
+    })
+    .finally(() => {
+        btn.disabled = false;
+    });
+}
+
+function getAIReview() {
+    const code = document.getElementById("code").value;
+    const language = document.getElementById("language").value;
+    const btn = document.getElementById("ai-review-btn");
+    const loading = document.getElementById("ai-review-loading");
+    const content = document.getElementById("ai-review-content");
+
+    btn.disabled = true;
+    loading.classList.remove("d-none");
+    content.innerHTML = "";
+
+    fetch("{% url 'problems:ai_review_api' problem.id %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ code, language })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            content.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+        } else {
+            content.innerHTML = `<div class="alert alert-success">${data.review}</div>`;
+        }
+    })
+    .catch(error => {
+        content.innerHTML = `<div class="alert alert-danger">Error fetching AI review: ${error}</div>`;
+    })
+    .finally(() => {
+        loading.classList.add("d-none");
+        btn.disabled = false;
+    });
+}
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg rounded">
+                <div class="card-body text-center">
+                    <h2 class="card-title mb-3">👤 {{ user.username }}'s Profile</h2>
+                    <p class="text-muted">Track your progress below</p>
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card bg-light mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title text-success">Easy</h5>
+                                    <p class="card-text fs-4">{{ easy }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title text-warning">Medium</h5>
+                                    <p class="card-text fs-4">{{ medium }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title text-danger">Hard</h5>
+                                    <p class="card-text fs-4">{{ hard }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5>Total Problems Solved</h5>
+                        <span class="badge bg-primary fs-5 px-3 py-2">{{ total }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
