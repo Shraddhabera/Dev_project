@@ -34,7 +34,7 @@ def execute_code(code, language, input_data, time_limit):
             exec_file = cpp_file.with_suffix('.out')
 
             # Use full path to g++
-            gpp_path = r"'C:/msys64/mingw64/bin/g++.exe'"
+            gpp_path = r"C:/msys64/mingw64/bin/g++.exe"
 
             compile_result = subprocess.run(
                 [gpp_path, str(cpp_file), '-o', str(exec_file)],
