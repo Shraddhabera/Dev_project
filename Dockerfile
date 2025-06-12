@@ -22,4 +22,4 @@ RUN python manage.py collectstatic --noinput
 EXPOSE 8000
 
 # Run migrations, create superuser, and start with gunicorn
-CMD ["sh", "-c", "python manage.py migrate && python manage.py shell < create_superuser.py && gunicorn onlinejudge.wsgi"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && python manage.py shell < create_superuser.py && gunicorn onlinejudge.wsgi"]
