@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['novajudge.onrender.com', 'localhost', '127.0.0.1']
 
+CSRF_TRUSTED_ORIGINS = ['https://novajudge.onrender.com']
 
 
 # Application definition
