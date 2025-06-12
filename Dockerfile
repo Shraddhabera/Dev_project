@@ -53,4 +53,5 @@ COPY . .
 EXPOSE 8000
 
 # Default command
-CMD ["sh", "-c", "python manage.py migrate && gunicorn onlinejudge.wsgi:application --bind 0.0.0.0:$PORT"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py shell < create_superuser.py && gunicorn onlinejudge.wsgi"]
+
