@@ -1,5 +1,7 @@
 # 🏆 Nova Judge – Docker-Powered Django Online Judge
 
+[Live Demo 🔗](https://novajudge.onrender.com) • [Source Code 📂](https://github.com/Shraddhabera/Dev_project)
+
 ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
 ![Django](https://img.shields.io/badge/Django-5.2-green?logo=django)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql)
@@ -9,33 +11,100 @@
 > **Nova Judge** is a lightweight, fully-containerised online code-evaluation platform built with **Django**, **PostgreSQL**, and **Docker**.  
 > It supports multiple languages, on-demand AI code reviews (OpenAI), per-problem JSON test-cases, rich user profiles, leaderboards, and AWS-friendly deployment.
 
----
-
-## ✨ Features
-
-| Category | Highlights |
-| -------- | ---------- |
-| **Core Judge** | • Secure sand-boxed execution (Python & C++)<br>• Per-test-case verdicts<br>• Time / memory limits |
-| **AI Review** | • One-click, on-demand feedback via **GPT-4o**<br>• Actionable suggestions only when the user requests |
-| **User Experience** | • Submission history & verdict breakdown<br>• Profile page with solved counts by difficulty<br>• Global leaderboard |
-| **Admin** | • JSON-based test-case authoring (`problem_testcases/problem_<id>.json`)<br>• Django Admin for problems & users |
-| **Dev Ops** | • Single-command local start-up with `docker-compose`<br>• AWS EC2/RDS deployment guide<br>• CI-ready Docker images |
 
 ---
 
-## 🚀 Quick Start (Local)
+## 🛠 Features
 
-```bash
-# 1. Clone & cd
-git clone https://github.com/<your-github-user>/Nova_Judge.git
-cd Nova_Judge/onlinejudge
+- ✅ User registration & authentication  
+- 📋 Problem list with filters by difficulty  
+- 📝 Problem detail pages with descriptions and sample I/O  
+- 🧪 User code submissions with verdict display  
+- 🏆 Leaderboard based on solved problems  
+- 👤 User profile with picks for easy/medium/hard problems solved  
+- 🌐 Custom admin area for adding problems & test cases  
+- 🐳 Dockerized for consistent environments & easy deployment to Render
 
-# 2. Configure environment variables
-cp .env.example .env               # edit values as needed
+## 📸 Screenshots
 
-# 3. Build & run
-docker-compose up --build -d
+### 🔐 Login Page  
+![Login](/Screenshots/Screenshot%202025-06-12%20191244.png)
 
-# 4. Initialise DB
-docker-compose exec web python manage.py migrate
-docker-compose exec web python manage.py createsuperuser
+### 📂 Problem List  
+![Problem List](/Screenshots/Screenshot%202025-06-12%20191335.png)
+
+### 🧠 Problem Detail View  
+![Problem Detail](/Screenshots/Screenshot%202025-06-12%20191355.png)
+
+### 👤 User Profile  
+![User Profile](/Screenshots/Screenshot%202025-06-12%20191414.png)
+
+### 🏆 Leaderboard  
+![Leaderboard](/Screenshots/Screenshot%202025-06-12%20191446.png)
+
+### 📄 Submission History  
+![Submission Page](/Screenshots/Screenshot%202025-06-12%20191507.png)
+
+---
+
+## 🎥 Demo Video
+
+Watch the full walkthrough here:  
+▶️ [Loom Video - NovaJudge Demo](https://www.loom.com/share/41b4872052054b82bc8510589864f3ec?sid=3b3f3181-7ad8-41d6-8dbe-d6cb8cdf0585)
+
+---
+
+
+
+## 📦 Project Structure
+Dev_project/
+├── accounts/ # Custom user model, auth views
+├── problems/ # Problem models, views, test-case logic
+├── templates/ # HTML templates
+├── static/ # Static assets (CSS, images, JS)
+├── create_superuser.py # Script to auto-create admin on deploy
+├── Dockerfile # Docker image configuration
+├── requirements.txt # Python dependencies
+└── manage.py
+
+1. Install dependencies
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+2.Configure environment variables
+OPENAI_API_KEY=<your_api_key>  
+DATABASE_URL=sqlite:///db.sqlite3
+
+3. Run migrations
+python manage.py migrate
+
+4. Run the server
+python manage.py runserver
+
+🧩 Tech Stack
+Backend: Python, Django
+Frontend: HTML, Bootstrap
+Static file serving: WhiteNoise
+Containerization: Docker
+Deployment: Render
+Database: SQLite (local) / PostgreSQL (Render)
+
+👤 Maintainer
+Shraddha Bera
+GitHub: @Shraddhabera
+Live App: https://novajudge.onrender.com
+
+🎯 Challenges & Learnings
+1. First full-stack project—learned Django from scratch
+2. Dockerized deployment and CI-friendly setup
+3. Built a judge engine with test-case evaluation
+4. Developed leaderboards, profiles, and admin UI
+5. Learned how to collect static files and deploy correctly
+
+📜 License
+This project is licensed under the MIT License. See LICENSE for details.
+
+
+
+
