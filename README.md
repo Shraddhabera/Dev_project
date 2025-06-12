@@ -9,8 +9,7 @@
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)
 
 > **Nova Judge** is a lightweight, fully-containerised online code-evaluation platform built with **Django**, **PostgreSQL**, and **Docker**.  
-> It supports multiple languages, on-demand AI code reviews (OpenAI), per-problem JSON test-cases, rich user profiles, leaderboards, and AWS-friendly deployment.
-
+> It supports multiple languages, on-demand AI code reviews (OpenAI), per-problem JSON test-cases, rich user profiles, leaderboards.
 
 ---
 
@@ -23,7 +22,7 @@
 - 🏆 Leaderboard based on solved problems  
 - 👤 User profile with picks for easy/medium/hard problems solved  
 - 🌐 Custom admin area for adding problems & test cases  
-- 🐳 Dockerized for consistent environments & easy deployment to Render
+- 🐳 Dockerized for consistent environments & deployment through Render
 
 ## 📸 Screenshots
 
@@ -42,8 +41,6 @@
 
 Watch the full walkthrough here:  
 ▶️ [Loom Video - NovaJudge Demo](https://www.loom.com/share/41b4872052054b82bc8510589864f3ec?sid=3b3f3181-7ad8-41d6-8dbe-d6cb8cdf0585)
-
-Got it! Here's your fixed README section in plain copy-pasteable format (no special box formatting):
 
 ---
 
@@ -116,14 +113,17 @@ Live App: [https://novajudge.onrender.com](https://novajudge.onrender.com)
 
 
 
-🎯 Challenges & Learnings
+## 🎯 Challenges & Learnings
+
 1. First full-stack project—learned Django from scratch
 2. Dockerized deployment and CI-friendly setup
 3. Built a judge engine with test-case evaluation
 4. Developed leaderboards, profiles, and admin UI
 5. Learned how to collect static files and deploy correctly
 
-📜 License
+---
+## 📜 License
+
 This project is licensed under the MIT License. See LICENSE for details.
 
 
