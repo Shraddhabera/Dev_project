@@ -1,5 +1,9 @@
 import os
 from django.contrib.auth import get_user_model
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "onlinejudge.settings")
+django.setup()
 
 def run():
     User = get_user_model()
@@ -12,3 +16,6 @@ def run():
         print("✅ Superuser created")
     else:
         print("ℹ️ Superuser already exists")
+
+if __name__ == "__main__":
+    run()
