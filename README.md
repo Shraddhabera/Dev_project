@@ -27,20 +27,11 @@
 
 ## 📸 Screenshots
 
-### 🔐 Login Page  
-![Login](/Screenshots/Screenshot%202025-06-12%20191244.png)
-
 ### 📂 Problem List  
 ![Problem List](/Screenshots/Screenshot%202025-06-12%20191335.png)
 
 ### 🧠 Problem Detail View  
 ![Problem Detail](/Screenshots/Screenshot%202025-06-12%20191355.png)
-
-### 👤 User Profile  
-![User Profile](/Screenshots/Screenshot%202025-06-12%20191414.png)
-
-### 🏆 Leaderboard  
-![Leaderboard](/Screenshots/Screenshot%202025-06-12%20191446.png)
 
 ### 📄 Submission History  
 ![Submission Page](/Screenshots/Screenshot%202025-06-12%20191507.png)
