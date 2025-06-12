@@ -76,16 +76,12 @@ WSGI_APPLICATION = 'onlinejudge.wsgi.application'
 
 import os
 
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'judge_db'),
-        'USER': os.getenv('POSTGRES_USER', 'judge_user'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'judge_pass'),
-        'HOST': os.getenv('DATABASE_HOST', 'db'),
-        'PORT': os.getenv('DATABASE_PORT', '5432'),
-    }
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 }
+
 
 
 
