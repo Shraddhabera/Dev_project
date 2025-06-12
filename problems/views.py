@@ -21,6 +21,8 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 User = get_user_model()
 
 # Helper functions
+
+
 def execute_code(code, language, input_data, time_limit):
     output, error = "", ""
     try:
@@ -30,11 +32,16 @@ def execute_code(code, language, input_data, time_limit):
                 cpp_file = Path(f.name)
 
             exec_file = cpp_file.with_suffix('.out')
+
+            # Use full path to g++
+            gpp_path = r"C:\MinGW\bin\g++.exe"
+
             compile_result = subprocess.run(
-                ['g++', str(cpp_file), '-o', str(exec_file)],
+                [gpp_path, str(cpp_file), '-o', str(exec_file)],
                 stderr=subprocess.PIPE,
                 text=True
             )
+
             if compile_result.returncode != 0:
                 error = compile_result.stderr
             else:
@@ -68,6 +75,7 @@ def execute_code(code, language, input_data, time_limit):
         error = str(e)
 
     return output, error
+
 
 # Views
 def problem_list(request):
