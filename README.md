@@ -52,48 +52,78 @@
 Watch the full walkthrough here:  
 ▶️ [Loom Video - NovaJudge Demo](https://www.loom.com/share/41b4872052054b82bc8510589864f3ec?sid=3b3f3181-7ad8-41d6-8dbe-d6cb8cdf0585)
 
+Got it! Here's your fixed README section in plain copy-pasteable format (no special box formatting):
+
+---
+
+## 📦 Project Structure
+
+```
+Dev_project/
+├── accounts/             # Custom user model, auth views  
+├── problems/             # Problem models, views, test-case logic  
+├── templates/            # HTML templates  
+├── static/               # Static assets (CSS, images, JS)  
+├── create_superuser.py   # Script to auto-create admin on deploy  
+├── Dockerfile            # Docker image configuration  
+├── requirements.txt      # Python dependencies  
+└── manage.py
+```
+
+---
+
+## 🚀 Getting Started
+
+**1. Install dependencies**
+
+```
+python3 -m venv venv  
+source venv/bin/activate  
+pip install -r requirements.txt
+```
+
+**2. Configure environment variables**
+Create a `.env` file or export them manually:
+
+```
+OPENAI_API_KEY=<your_api_key>  
+DATABASE_URL=sqlite:///db.sqlite3
+```
+
+**3. Run migrations**
+
+```
+python manage.py migrate
+```
+
+**4. Run the server**
+
+```
+python manage.py runserver
+```
+
+---
+
+## 🧩 Tech Stack
+
+* **Backend**: Python, Django
+* **Frontend**: HTML, Bootstrap
+* **Static Files**: WhiteNoise
+* **Containerization**: Docker
+* **Deployment**: Render
+* **Database**: SQLite (local), PostgreSQL (Render)
+
+---
+
+## 👤 Maintainer
+
+**Shraddha Bera**
+GitHub: [@Shraddhabera](https://github.com/Shraddhabera)
+Live App: [https://novajudge.onrender.com](https://novajudge.onrender.com)
+
 ---
 
 
-
-## 📦 Project Structure
-Dev_project/
-├── accounts/ # Custom user model, auth views
-├── problems/ # Problem models, views, test-case logic
-├── templates/ # HTML templates
-├── static/ # Static assets (CSS, images, JS)
-├── create_superuser.py # Script to auto-create admin on deploy
-├── Dockerfile # Docker image configuration
-├── requirements.txt # Python dependencies
-└── manage.py
-
-1. Install dependencies
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-2.Configure environment variables
-OPENAI_API_KEY=<your_api_key>  
-DATABASE_URL=sqlite:///db.sqlite3
-
-3. Run migrations
-python manage.py migrate
-
-4. Run the server
-python manage.py runserver
-
-🧩 Tech Stack
-Backend: Python, Django
-Frontend: HTML, Bootstrap
-Static file serving: WhiteNoise
-Containerization: Docker
-Deployment: Render
-Database: SQLite (local) / PostgreSQL (Render)
-
-👤 Maintainer
-Shraddha Bera
-GitHub: @Shraddhabera
-Live App: https://novajudge.onrender.com
 
 🎯 Challenges & Learnings
 1. First full-stack project—learned Django from scratch
