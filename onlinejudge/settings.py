@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-hh*&v45txhnhu68@i$shi*qalo=l=)w4*b%8$1akw(e+!n#+ju
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['novajudge.onrender.com', 'localhost', '127.0.0.1']
+
 
 
 # Application definition
