@@ -23,8 +23,15 @@ User = get_user_model()
 # Helper functions
 
 
+import subprocess
+import sys
+import shutil
+from tempfile import NamedTemporaryFile
+from pathlib import Path
+
 def execute_code(code, language, input_data, time_limit):
     output, error = "", ""
+
     try:
         if language == 'cpp':
             with NamedTemporaryFile(suffix='.cpp', delete=False) as f:
@@ -33,9 +40,12 @@ def execute_code(code, language, input_data, time_limit):
 
             exec_file = cpp_file.with_suffix('.out')
 
-            # Use full path to g++
-            gpp_path = r"C:/msys64/mingw64/bin/g++.exe"
+            # Dynamically find g++ in system path
+            gpp_path = shutil.which("g++")
+            if not gpp_path:
+                raise RuntimeError("g++ compiler not found. Ensure it is installed and in PATH.")
 
+            # Compile the C++ code
             compile_result = subprocess.run(
                 [gpp_path, str(cpp_file), '-o', str(exec_file)],
                 stderr=subprocess.PIPE,
@@ -43,7 +53,7 @@ def execute_code(code, language, input_data, time_limit):
             )
 
             if compile_result.returncode != 0:
-                error = compile_result.stderr
+                error = compile_result.stderr.strip()
             else:
                 result = subprocess.run(
                     [str(exec_file)],
@@ -55,6 +65,7 @@ def execute_code(code, language, input_data, time_limit):
                 output = result.stdout.strip()
                 error = result.stderr.strip()
 
+            # Cleanup
             cpp_file.unlink(missing_ok=True)
             exec_file.unlink(missing_ok=True)
 
@@ -75,6 +86,7 @@ def execute_code(code, language, input_data, time_limit):
         error = str(e)
 
     return output, error
+
 
 
 # Views
