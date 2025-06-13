@@ -66,22 +66,24 @@ function checkStrength() {
     const strengthText = document.getElementById("strength-text");
 
     let strength = 0;
-    if (pwd.length >= 8) strength++;
-    if (/[a-z]/.test(pwd)) strength++;
-    if (/[A-Z]/.test(pwd)) strength++;
+    if (pwd.length >= 6) strength++;
+    if (/[a-z]/.test(pwd) || /[A-Z]/.test(pwd)) strength++; // any letter
     if (/[0-9]/.test(pwd)) strength++;
     if (/[^a-zA-Z0-9]/.test(pwd)) strength++;
 
     let msg = "";
     let color = "";
-    if (strength <= 2) {
-        msg = "Weak password";
+    if (pwd.length === 0) {
+        msg = "";
+        color = "";
+    } else if (strength <= 1) {
+        msg = "Too weak (min 6 characters)";
         color = "text-danger";
-    } else if (strength === 3 || strength === 4) {
+    } else if (strength === 2) {
         msg = "Moderate password";
         color = "text-warning";
     } else {
-        msg = "Strong password";
+        msg = "Strong enough";
         color = "text-success";
     }
 
@@ -96,7 +98,12 @@ function validateForm() {
         alert("Passwords do not match.");
         return false;
     }
+    if (pwd1.length < 6) {
+        alert("Password must be at least 6 characters long.");
+        return false;
+    }
     return true;
 }
 </script>
+
 {% endblock %}
