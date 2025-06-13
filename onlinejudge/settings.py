@@ -117,6 +117,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 from django.urls import reverse_lazy
-LOGIN_REDIRECT_URL = 'problems:problem_list'  # After login, go to problems
-LOGOUT_REDIRECT_URL = 'problems:home'  # After logout, go to homepage
-
+LOGIN_REDIRECT_URL = 'problems:problem_list'  # After login, go to problem list
+LOGOUT_REDIRECT_URL = 'home'  # After logout, go to main home (not problems:home)

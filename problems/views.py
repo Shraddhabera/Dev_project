@@ -366,8 +366,10 @@ def leaderboard_api(request):
 
 from django.shortcuts import redirect, render
 
+from django.shortcuts import render, redirect
+
 def home(request):
     """Landing page view for non-authenticated users"""
     if request.user.is_authenticated:
-        return redirect('problems:problem_list')  # Redirect logged-in users to problems
+        return redirect('problems:problem_list')
     return render(request, 'problems/home.html')
