@@ -363,3 +363,11 @@ def leaderboard_api(request):
     # Sort descending by problems_solved
     user_scores.sort(key=lambda x: x["problems_solved"], reverse=True)
     return JsonResponse(user_scores, safe=False)
+
+from django.shortcuts import redirect, render
+
+def home(request):
+    """Landing page view for non-authenticated users"""
+    if request.user.is_authenticated:
+        return redirect('problems:problem_list')  # Redirect logged-in users to problems
+    return render(request, 'problems/home.html')
