@@ -8,7 +8,14 @@ ENV PYTHONUNBUFFERED=1
 # Set work directory
 WORKDIR /app
 
-# Install dependencies
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    g++ \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -21,5 +28,5 @@ RUN python manage.py collectstatic --noinput
 # Expose port
 EXPOSE 8000
 
-# Run migrations, create superuser, and start with gunicorn
+# Run migrations, create superuser, and start gunicorn
 CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && python manage.py shell < create_superuser.py && gunicorn onlinejudge.wsgi"]
