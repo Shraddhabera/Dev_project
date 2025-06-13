@@ -348,7 +348,7 @@ Focus on these areas:
 """
 
             # Updated Gemini API endpoint
-            model_name = "gemini-pro"  # or "gemini-1.5-pro-latest" if available
+            model_name = "gemini-2.0-flash"  # or "gemini-1.5-pro-latest" if available
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
             
             # Call Gemini API
