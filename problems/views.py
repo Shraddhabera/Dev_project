@@ -181,14 +181,21 @@ def run_all_testcases(request, problem_id):
                 else:
                     verdict = "Failed"
                 
-                results.append({
+                if testcase.is_sample:
+                    results.append({
                     'input': testcase.input_data,
                     'expected_output': testcase.expected_output,
                     'output': output,
                     'error': error,
                     'verdict': verdict,
-                    'is_sample': testcase.is_sample
+                    'is_sample': True
                 })
+            else:
+                results.append({
+                    'verdict': verdict,
+                    'is_sample': False
+                })
+
             
             return JsonResponse({
                 'results': results,

@@ -265,12 +265,24 @@ function runAllTestCases() {
 
         data.results.forEach((result, index) => {
             html += `
-            <div class="test-case mb-2 p-2 rounded ${result.verdict === 'Passed' ? 'bg-success-light' : 'bg-danger-light'}">
+            <div class="test-case mb-2 p-3 rounded border ${result.verdict === 'Passed' ? 'border-success' : 'border-danger'}">
                 <strong>Test Case ${index + 1}:</strong> 
                 <span class="badge ${result.verdict === 'Passed' ? 'bg-success' : 'bg-danger'}">
                     ${result.verdict}
-                </span>
-            </div>`;
+                </span><br>`;
+
+            if (result.is_sample) {
+                html += `
+                    <div class="mt-2"><strong>Input:</strong><pre>${result.input}</pre></div>
+                    <div><strong>Expected Output:</strong><pre>${result.expected_output}</pre></div>
+                    <div><strong>Your Output:</strong><pre>${result.output}</pre></div>
+                    ${result.error ? `<div><strong>Error:</strong><pre>${result.error}</pre></div>` : ''}
+                `;
+            } else {
+                html += `<div class="text-muted mt-1"><em>Hidden test case</em></div>`;
+            }
+
+            html += `</div>`;
         });
 
         resultsDiv.innerHTML = html;
@@ -279,6 +291,7 @@ function runAllTestCases() {
         resultsDiv.innerHTML = `<div class="alert alert-danger">Error running test cases: ${error.message}</div>`;
     });
 }
+
 
 
 function submitCode() {
