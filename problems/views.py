@@ -328,6 +328,9 @@ def profile_view(request):
         'total': easy + medium + hard,
     })
 
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
 def leaderboard(request):
     user_scores = (
         User.objects.annotate(
