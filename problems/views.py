@@ -217,13 +217,14 @@ def submit_code(request, problem_id):
             language = data.get('language', 'python')
             problem = get_object_or_404(Problem, pk=problem_id)
             testcases = TestCase.objects.filter(problem=problem)
-            
-            results = []
+
             passed = 0
-            
+            total = len(testcases)
+            sample_results = []
+
             for testcase in testcases:
                 output, error = execute_code(code, language, testcase.input_data, problem.time_limit)
-                
+
                 if error:
                     verdict = "Error"
                 elif output == testcase.expected_output:
@@ -231,23 +232,26 @@ def submit_code(request, problem_id):
                     passed += 1
                 else:
                     verdict = "Failed"
-                
-                results.append({
-                    'input': testcase.input_data,
-                    'expected_output': testcase.expected_output,
-                    'output': output,
-                    'error': error,
-                    'verdict': verdict
-                })
-            
+
+                # Collect detailed result only for sample test cases
+                if testcase.is_sample:
+                    sample_results.append({
+                        'input': testcase.input_data,
+                        'expected_output': testcase.expected_output,
+                        'output': output,
+                        'error': error,
+                        'verdict': verdict,
+                        'is_sample': True
+                    })
+
             # Determine overall verdict
-            if passed == len(testcases):
+            if passed == total:
                 overall_verdict = "Accepted"
             elif passed > 0:
                 overall_verdict = "Partial Answer"
             else:
                 overall_verdict = "Wrong Answer"
-            
+
             # Save submission
             submission = Submission.objects.create(
                 user=request.user,
@@ -256,17 +260,18 @@ def submit_code(request, problem_id):
                 language=language,
                 verdict=overall_verdict
             )
-            
+
             return JsonResponse({
                 'submission_id': submission.id,
                 'verdict': overall_verdict,
-                'score': f"{passed}/{len(testcases)}",
-                'results': results,
+                'score': f"{passed}/{total}",
+                'results': sample_results,
                 'timestamp': submission.created_at.isoformat()
             })
-            
+
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
 
 import requests
 from django.conf import settings
@@ -277,47 +282,63 @@ from django.shortcuts import get_object_or_404
 from problems.models import Problem
 import json
 
+import json
+import requests
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.conf import settings
+from problems.models import Problem
+
 @csrf_exempt
 @login_required
 def ai_code_review(request, problem_id):
     if request.method == 'POST':
         try:
+            # Parse request data
             data = json.loads(request.body)
             code = data.get('code', '')
             language = data.get('language', 'python')
+
+            # Fetch problem details
             problem = get_object_or_404(Problem, pk=problem_id)
 
+            # Optional language-specific guidelines
             language_guidelines = {
                 'python': [
                     "Check PEP 8 compliance",
-                    "Verify proper use of Pythonic constructs",
+                    "Use Pythonic idioms (e.g., list comprehensions)",
                     "Analyze exception handling"
                 ],
                 'cpp': [
                     "Check for memory management issues",
-                    "Verify proper use of STL",
-                    "Analyze pointer/reference usage",
+                    "Use of STL (Standard Template Library)",
+                    "Proper pointer/reference usage",
                     "Check const-correctness"
                 ]
             }
 
+            # Create prompt for Gemini
             prompt = f"""
-Please review this {language} code solution for the following programming problem.
-Provide constructive feedback on these aspects:
+Please review the following {language} code solution to a competitive programming problem.
+
+Focus on these areas:
 - Code quality and readability
-- Algorithm efficiency (time/space complexity)
-- Edge case handling
-- Potential bugs
-- Best practices for {language}
-- Specific considerations: {', '.join(language_guidelines.get(language, []))}
+- Efficiency (time and space)
+- Handling of edge cases
+- Bug risks or logic flaws
+- Best practices in {language}
+- Specific points: {', '.join(language_guidelines.get(language, []))}
 
-Problem Title: {problem.title}
-Problem Description: {problem.description}
+### Problem:
+**{problem.title}**
 
-The code to review:
-{code}
+{problem.description}
 
-Provide your feedback in markdown format with these sections:
+### User Code:
+
+### Provide feedback in this format:
 1. **Code Quality Assessment**
 2. **Efficiency Analysis**
 3. **Improvement Suggestions**
@@ -325,6 +346,7 @@ Provide your feedback in markdown format with these sections:
 5. **Final Grade** (A-F)
 """
 
+            # Call Gemini API
             response = requests.post(
                 url="https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
                 headers={"Content-Type": "application/json"},
@@ -337,11 +359,12 @@ Provide your feedback in markdown format with these sections:
                 }
             )
 
+            # Handle Gemini response
             if response.status_code == 200:
                 result = response.json()
-                text_response = result['candidates'][0]['content']['parts'][0]['text']
+                review_text = result['candidates'][0]['content']['parts'][0]['text']
                 return JsonResponse({
-                    'review': text_response,
+                    'review': review_text,
                     'language': language,
                     'problem': problem.title
                 })
@@ -355,6 +378,7 @@ Provide your feedback in markdown format with these sections:
             return JsonResponse({'error': 'Invalid JSON data'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
 
 
 @login_required

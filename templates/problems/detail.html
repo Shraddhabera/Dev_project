@@ -313,34 +313,38 @@ function submitCode() {
     })
     .then(res => res.json())
     .then(data => {
-        let html = `<div class="mb-2">
+        let html = `<div class="mb-3">
             <strong>Final Verdict:</strong> 
             <span class="badge ${data.verdict === 'Accepted' ? 'bg-success' : 
-                              data.verdict === 'Partial Answer' ? 'bg-warning text-dark' : 'bg-danger'}">
+                                  data.verdict === 'Partial Answer' ? 'bg-warning text-dark' : 'bg-danger'}">
                 ${data.verdict}
-            </span>
-            (${data.score})
+            </span> (${data.score})
         </div>`;
-        
-        data.results.forEach((result, index) => {
-            html += `
-            <div class="test-case mb-3 p-2 ${result.verdict === 'Passed' ? 'bg-success-light' : 'bg-danger-light'}">
-                <h6>Test Case ${index + 1}</h6>
-                <div class="mb-1"><strong>Input:</strong> ${result.input}</div>
-                <div class="mb-1"><strong>Expected:</strong> ${result.expected_output}</div>
-                <div class="mb-1"><strong>Output:</strong> ${result.output}</div>
-                <div><strong>Verdict:</strong> 
-                    <span class="badge ${result.verdict === 'Passed' ? 'bg-success' : 'bg-danger'}">
-                        ${result.verdict || result.error}
-                    </span>
-                </div>
-                ${result.error ? `<div class="text-danger mt-1"><strong>Error:</strong> ${result.error}</div>` : ''}
-            </div>`;
-        });
+
+        if (data.results.length === 0) {
+            html += `<p class="text-muted">No sample test cases to display.</p>`;
+        } else {
+            html += `<h5>Sample Test Case Results:</h5>`;
+            data.results.forEach((result, index) => {
+                html += `
+                <div class="test-case mb-3 p-2 border rounded ${result.verdict === 'Passed' ? 'bg-light-success' : 'bg-light-danger'}">
+                    <h6>Sample Test Case ${index + 1}</h6>
+                    <div><strong>Input:</strong> <pre>${result.input}</pre></div>
+                    <div><strong>Expected Output:</strong> <pre>${result.expected_output}</pre></div>
+                    <div><strong>Your Output:</strong> <pre>${result.output}</pre></div>
+                    <div><strong>Verdict:</strong> 
+                        <span class="badge ${result.verdict === 'Passed' ? 'bg-success' : 'bg-danger'}">
+                            ${result.verdict}
+                        </span>
+                    </div>
+                    ${result.error ? `<div class="text-danger mt-1"><strong>Error:</strong> ${result.error}</div>` : ''}
+                </div>`;
+            });
+        }
 
         resultsDiv.innerHTML = html;
-        
-        // Redirect to submissions page after 2 seconds if successful
+
+        // Redirect after a short delay if accepted
         if (data.verdict === 'Accepted') {
             setTimeout(() => {
                 window.location.href = "{% url 'problems:user_submissions' %}";
@@ -354,6 +358,7 @@ function submitCode() {
         submitBtn.disabled = false;
     });
 }
+
 
 function getAIReview() {
     const code = document.getElementById("code").value;
