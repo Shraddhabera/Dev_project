@@ -3,6 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from .forms import UserRegisterForm
 from .models import User  
+from django.views.decorators.csrf import csrf_protect
 
 def register(request):
     if request.method == 'POST':
@@ -32,6 +33,7 @@ def register(request):
         form = UserRegisterForm()
     return render(request, 'accounts/register.html', {'form': form})
 
+@csrf_protect
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
