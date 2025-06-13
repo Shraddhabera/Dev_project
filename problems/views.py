@@ -337,6 +337,7 @@ Focus on these areas:
 {problem.description}
 
 ### User Code:
+{code}
 
 ### Provide feedback in this format:
 1. **Code Quality Assessment**
@@ -346,9 +347,13 @@ Focus on these areas:
 5. **Final Grade** (A-F)
 """
 
+            # Updated Gemini API endpoint
+            model_name = "gemini-pro"  # or "gemini-1.5-pro-latest" if available
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
+            
             # Call Gemini API
             response = requests.post(
-                url="https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+                url=url,
                 headers={"Content-Type": "application/json"},
                 params={"key": settings.GEMINI_API_KEY},
                 json={
@@ -362,17 +367,24 @@ Focus on these areas:
             # Handle Gemini response
             if response.status_code == 200:
                 result = response.json()
-                review_text = result['candidates'][0]['content']['parts'][0]['text']
-                return JsonResponse({
-                    'review': review_text,
-                    'language': language,
-                    'problem': problem.title
-                })
+                # Updated response parsing (structure might vary)
+                if 'candidates' in result and len(result['candidates']) > 0:
+                    review_text = result['candidates'][0]['content']['parts'][0]['text']
+                    return JsonResponse({
+                        'review': review_text,
+                        'language': language,
+                        'problem': problem.title
+                    })
+                else:
+                    return JsonResponse({
+                        'error': "Unexpected response format from Gemini API",
+                        'details': result
+                    }, status=500)
             else:
                 return JsonResponse({
                     'error': f"Gemini API returned status {response.status_code}",
                     'details': response.text
-                }, status=500)
+                }, status=response.status_code)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON data'}, status=400)
