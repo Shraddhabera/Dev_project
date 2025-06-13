@@ -321,30 +321,15 @@ def ai_code_review(request, problem_id):
 
             # Create prompt for Gemini
             prompt = f"""
-Please review the following {language} code solution to a competitive programming problem.
+Review this {data.get('language', 'python')} code for problem "{problem.title}":
+{data.get('code', '')}
 
-Focus on these areas:
-- Code quality and readability
-- Efficiency (time and space)
-- Handling of edge cases
-- Bug risks or logic flaws
-- Best practices in {language}
-- Specific points: {', '.join(language_guidelines.get(language, []))}
-
-### Problem:
-**{problem.title}**
-
-{problem.description}
-
-### User Code:
-{code}
-
-### Provide feedback in this format:
-1. **Code Quality Assessment**
-2. **Efficiency Analysis**
-3. **Improvement Suggestions**
-4. **Potential Bugs**
-5. **Final Grade** (A-F)
+Provide concise feedback (1-2 sentences per point):
+1. Code Quality
+2. Efficiency
+3. Quick Improvements
+4. Potential Bugs
+5. Grade (A-F)
 """
 
             # Updated Gemini API endpoint
