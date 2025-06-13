@@ -296,83 +296,85 @@ from problems.models import Problem
 def ai_code_review(request, problem_id):
     if request.method == 'POST':
         try:
-            # Parse request data
             data = json.loads(request.body)
             code = data.get('code', '')
             language = data.get('language', 'python')
-
-            # Fetch problem details
             problem = get_object_or_404(Problem, pk=problem_id)
 
-            # Optional language-specific guidelines
-            language_guidelines = {
-                'python': [
-                    "Check PEP 8 compliance",
-                    "Use Pythonic idioms (e.g., list comprehensions)",
-                    "Analyze exception handling"
-                ],
-                'cpp': [
-                    "Check for memory management issues",
-                    "Use of STL (Standard Template Library)",
-                    "Proper pointer/reference usage",
-                    "Check const-correctness"
-                ]
-            }
+            # Step 1: Basic Syntax Check
+            if language == 'python':
+                try:
+                    compile(code, '<string>', 'exec')
+                except SyntaxError as e:
+                    return JsonResponse({
+                        'error': 'Syntax Error',
+                        'details': str(e),
+                        'review': "Code contains syntax errors and cannot be executed."
+                    }, status=400)
 
-            # Create prompt for Gemini
+            # Step 2: Create enhanced prompt
             prompt = f"""
-Review this {data.get('language', 'python')} code for problem "{problem.title}":
-{data.get('code', '')}
+Act as a strict code reviewer. The following {language} code claims to solve:
+Problem: {problem.title}
+Description: {problem.description}
 
-Provide concise feedback (1-2 sentences per point):
-1. Code Quality
-2. Efficiency
-3. Quick Improvements
-4. Potential Bugs
-5. Grade (A-F)
+Code:
+{code}
+
+Review requirements:
+1. First verify if the code actually runs without errors
+2. Check if it solves the problem correctly
+3. Only if it passes 1 & 2, provide:
+   - Code Quality (1 sentence)
+   - Efficiency (1 sentence)
+   - Grade (A-F)
+4. If it fails 1 or 2:
+   - Clearly state "REJECTED: "
+   - Explain the error
+   - Suggest fixes
 """
 
-            # Updated Gemini API endpoint
-            model_name = "gemini-2.0-flash"  # or "gemini-1.5-pro-latest" if available
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
-            
             # Call Gemini API
+            model_name = "gemini-1.5-pro-latest"  # More reliable than flash for code analysis
             response = requests.post(
-                url=url,
+                f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent",
                 headers={"Content-Type": "application/json"},
                 params={"key": settings.GEMINI_API_KEY},
                 json={
                     "contents": [{
                         "parts": [{"text": prompt}],
                         "role": "user"
-                    }]
+                    }],
+                    "generationConfig": {
+                        "temperature": 0.2  # More deterministic responses
+                    }
                 }
             )
 
-            # Handle Gemini response
+            # Process response
             if response.status_code == 200:
                 result = response.json()
-                # Updated response parsing (structure might vary)
-                if 'candidates' in result and len(result['candidates']) > 0:
-                    review_text = result['candidates'][0]['content']['parts'][0]['text']
+                if 'candidates' in result and result['candidates']:
+                    review = result['candidates'][0]['content']['parts'][0]['text']
+                    
+                    # Add automatic rejection if code contains obvious errors
+                    if "error" in code.lower() or "exception" in code.lower():
+                        review = "REJECTED: Code contains obvious error patterns.\n" + review
+                    
                     return JsonResponse({
-                        'review': review_text,
+                        'review': review,
                         'language': language,
                         'problem': problem.title
                     })
-                else:
-                    return JsonResponse({
-                        'error': "Unexpected response format from Gemini API",
-                        'details': result
-                    }, status=500)
-            else:
-                return JsonResponse({
-                    'error': f"Gemini API returned status {response.status_code}",
-                    'details': response.text
-                }, status=response.status_code)
+                return JsonResponse({'error': 'Empty API response'}, status=500)
+            
+            return JsonResponse({
+                'error': f"API error {response.status_code}",
+                'details': response.text
+            }, status=500)
 
         except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 

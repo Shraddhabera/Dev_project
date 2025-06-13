@@ -359,43 +359,73 @@ function submitCode() {
     });
 }
 
-
 function getAIReview() {
-    const code = document.getElementById("code").value;
+    const code = document.getElementById("code").value.trim();
     const language = document.getElementById("language").value;
     const btn = document.getElementById("ai-review-btn");
     const loading = document.getElementById("ai-review-loading");
     const content = document.getElementById("ai-review-content");
 
+    // Validate input
+    if (!code) {
+        content.innerHTML = `<div class="alert alert-warning">Please enter code to review.</div>`;
+        return;
+    }
+
     btn.disabled = true;
     loading.classList.remove("d-none");
-    content.innerHTML = "";
+    content.innerHTML = ""; // Clear previous content
 
     fetch("{% url 'problems:ai_review' problem.id %}", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
+            'X-CSRFToken': '{{ csrf_token }}',
         },
-        body: JSON.stringify({ code, language })
+        body: JSON.stringify({ code, language }),
     })
-    .then(res => res.json())
+    .then(async (res) => {
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || "Request failed");
+        }
+        return res.json();
+    })
     .then(data => {
-        if (data.error) {
-            content.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
-        } else {
-            // Format the markdown response with line breaks
-            const formattedReview = data.review.replace(/\n/g, '<br>');
+        if (data.review) {
+            // Format markdown/plaintext safely (avoid XSS)
+            const formattedReview = data.review
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\n/g, '<br>');
+            
             content.innerHTML = `<div class="alert alert-success">${formattedReview}</div>`;
+        } else {
+            throw new Error("No review content received");
         }
     })
     .catch(error => {
-        content.innerHTML = `<div class="alert alert-danger">Error fetching AI review: ${error}</div>`;
+        content.innerHTML = `
+            <div class="alert alert-danger">
+                <strong>Error:</strong> ${escapeHtml(error.message)}
+            </div>
+        `;
     })
     .finally(() => {
         loading.classList.add("d-none");
         btn.disabled = false;
     });
+}
+
+// Helper to escape HTML (prevent XSS)
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 </script>
 
