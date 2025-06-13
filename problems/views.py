@@ -268,6 +268,15 @@ def submit_code(request, problem_id):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+import requests
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from problems.models import Problem
+import json
+
 @csrf_exempt
 @login_required
 def ai_code_review(request, problem_id):
@@ -278,9 +287,29 @@ def ai_code_review(request, problem_id):
             language = data.get('language', 'python')
             problem = get_object_or_404(Problem, pk=problem_id)
 
+            language_guidelines = {
+                'python': [
+                    "Check PEP 8 compliance",
+                    "Verify proper use of Pythonic constructs",
+                    "Analyze exception handling"
+                ],
+                'cpp': [
+                    "Check for memory management issues",
+                    "Verify proper use of STL",
+                    "Analyze pointer/reference usage",
+                    "Check const-correctness"
+                ]
+            }
+
             prompt = f"""
 Please review this {language} code solution for the following programming problem.
-Provide constructive feedback on code quality, efficiency, style, and potential improvements.
+Provide constructive feedback on these aspects:
+- Code quality and readability
+- Algorithm efficiency (time/space complexity)
+- Edge case handling
+- Potential bugs
+- Best practices for {language}
+- Specific considerations: {', '.join(language_guidelines.get(language, []))}
 
 Problem Title: {problem.title}
 Problem Description: {problem.description}
@@ -288,23 +317,45 @@ Problem Description: {problem.description}
 The code to review:
 {code}
 
-Please provide:
-1. A brief summary of what the code does well
-2. Specific areas for improvement
-3. Suggestions for better practices
-4. Any potential bugs or edge cases not handled
-5. A letter grade (A-F) for code quality
-
-Format your response in clear, markdown-formatted sections.
+Provide your feedback in markdown format with these sections:
+1. **Code Quality Assessment**
+2. **Efficiency Analysis**
+3. **Improvement Suggestions**
+4. **Potential Bugs**
+5. **Final Grade** (A-F)
 """
 
-            model = genai.GenerativeModel('gemini-pro')
-            response = model.generate_content(prompt)
+            response = requests.post(
+                url="https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+                headers={"Content-Type": "application/json"},
+                params={"key": settings.GEMINI_API_KEY},
+                json={
+                    "contents": [{
+                        "parts": [{"text": prompt}],
+                        "role": "user"
+                    }]
+                }
+            )
 
-            return JsonResponse({'review': response.text})
+            if response.status_code == 200:
+                result = response.json()
+                text_response = result['candidates'][0]['content']['parts'][0]['text']
+                return JsonResponse({
+                    'review': text_response,
+                    'language': language,
+                    'problem': problem.title
+                })
+            else:
+                return JsonResponse({
+                    'error': f"Gemini API returned status {response.status_code}",
+                    'details': response.text
+                }, status=500)
 
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
         except Exception as e:
-            return JsonResponse({'error': f"Failed to generate AI review: {str(e)}"})
+            return JsonResponse({'error': str(e)}, status=500)
+
 
 @login_required
 def user_submissions(request):
