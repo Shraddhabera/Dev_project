@@ -202,6 +202,48 @@ function runCode() {
 }
 
 
+// function runAllTestCases() {
+//     const code = document.getElementById("code").value;
+//     const language = document.getElementById("language").value;
+//     const resultsDiv = document.getElementById("test-results");
+
+//     resultsDiv.innerHTML = "<p>Running all test cases...</p>";
+
+//     fetch("{% url 'problems:run_all_testcases' problem.id %}", {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'X-CSRFToken': '{{ csrf_token }}'
+//         },
+//         body: JSON.stringify({ code, language })
+//     })
+//     .then(res => res.json())
+//     .then(data => {
+//         let html = `<div class="mb-2"><strong>Results:</strong> ${data.passed}/${data.total} passed</div>`;
+        
+//         data.results.forEach((result, index) => {
+//             html += `
+//             <div class="test-case mb-3 p-2 ${result.verdict === 'Passed' ? 'bg-success-light' : 'bg-danger-light'}">
+//                 <h6>Test Case ${index + 1} ${result.is_sample ? '(Sample)' : ''}</h6>
+//                 <div class="mb-1"><strong>Input:</strong> ${result.input}</div>
+//                 <div class="mb-1"><strong>Expected:</strong> ${result.expected_output}</div>
+//                 <div class="mb-1"><strong>Output:</strong> ${result.output}</div>
+//                 <div><strong>Verdict:</strong> 
+//                     <span class="badge ${result.verdict === 'Passed' ? 'bg-success' : 'bg-danger'}">
+//                         ${result.verdict}
+//                     </span>
+//                 </div>
+//                 ${result.error ? `<div class="text-danger mt-1"><strong>Error:</strong> ${result.error}</div>` : ''}
+//             </div>`;
+//         });
+
+//         resultsDiv.innerHTML = html;
+//     })
+//     .catch(error => {
+//         resultsDiv.innerHTML = `<div class="alert alert-danger">Error running test cases: ${error.message}</div>`;
+//     });
+// }
+
 function runAllTestCases() {
     const code = document.getElementById("code").value;
     const language = document.getElementById("language").value;
@@ -219,21 +261,15 @@ function runAllTestCases() {
     })
     .then(res => res.json())
     .then(data => {
-        let html = `<div class="mb-2"><strong>Results:</strong> ${data.passed}/${data.total} passed</div>`;
-        
+        let html = `<div class="mb-3"><strong>Results:</strong> ${data.passed}/${data.total} test cases passed</div>`;
+
         data.results.forEach((result, index) => {
             html += `
-            <div class="test-case mb-3 p-2 ${result.verdict === 'Passed' ? 'bg-success-light' : 'bg-danger-light'}">
-                <h6>Test Case ${index + 1} ${result.is_sample ? '(Sample)' : ''}</h6>
-                <div class="mb-1"><strong>Input:</strong> ${result.input}</div>
-                <div class="mb-1"><strong>Expected:</strong> ${result.expected_output}</div>
-                <div class="mb-1"><strong>Output:</strong> ${result.output}</div>
-                <div><strong>Verdict:</strong> 
-                    <span class="badge ${result.verdict === 'Passed' ? 'bg-success' : 'bg-danger'}">
-                        ${result.verdict}
-                    </span>
-                </div>
-                ${result.error ? `<div class="text-danger mt-1"><strong>Error:</strong> ${result.error}</div>` : ''}
+            <div class="test-case mb-2 p-2 rounded ${result.verdict === 'Passed' ? 'bg-success-light' : 'bg-danger-light'}">
+                <strong>Test Case ${index + 1}:</strong> 
+                <span class="badge ${result.verdict === 'Passed' ? 'bg-success' : 'bg-danger'}">
+                    ${result.verdict}
+                </span>
             </div>`;
         });
 
@@ -243,6 +279,7 @@ function runAllTestCases() {
         resultsDiv.innerHTML = `<div class="alert alert-danger">Error running test cases: ${error.message}</div>`;
     });
 }
+
 
 function submitCode() {
     const code = document.getElementById("code").value;

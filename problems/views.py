@@ -16,9 +16,10 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.contrib.auth import get_user_model
 
-load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-User = get_user_model()
+import google.generativeai as genai
+from django.conf import settings
+
+genai.configure(api_key=settings.GEMINI_API_KEY)
 
 # Helper functions
 
@@ -290,18 +291,10 @@ Please provide:
 Format your response in clear, markdown-formatted sections.
 """
 
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are a helpful programming code reviewer."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=1000
-            )
+            model = genai.GenerativeModel('gemini-pro')
+            response = model.generate_content(prompt)
 
-            review = response.choices[0].message.content
-            return JsonResponse({'review': review})
+            return JsonResponse({'review': response.text})
 
         except Exception as e:
             return JsonResponse({'error': f"Failed to generate AI review: {str(e)}"})

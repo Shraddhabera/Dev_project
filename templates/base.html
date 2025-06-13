@@ -5,22 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Online Judge - {% block title %}{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6e8efb, #a777e3);
+            --primary-light: #6e8efb;
+            --primary-dark: #a777e3;
+        }
+        
         body {
             padding-top: 20px;
             background-color: #f4f6f8;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .navbar {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border-radius: 10px;
+            background-color: white;
         }
 
         .navbar-brand {
             font-weight: bold;
             font-size: 1.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         .nav-link {
@@ -29,12 +45,13 @@
         }
 
         .nav-link:hover {
-            color: #0d6efd !important;
+            color: var(--primary-light) !important;
         }
 
         .problem-card {
             margin-bottom: 20px;
             transition: transform 0.2s, box-shadow 0.2s;
+            border-radius: 10px;
         }
 
         .problem-card:hover {
@@ -57,26 +74,69 @@
         .alert {
             border-radius: 10px;
         }
+        
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+        }
+        
+        .btn-outline-primary {
+            border-color: var(--primary-light);
+            color: var(--primary-light);
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+        }
+        
+        .footer {
+            margin-top: auto;
+            padding: 20px 0;
+            background-color: white;
+            border-radius: 10px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade {
+            animation: fadeIn 0.8s ease-out;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container flex-grow-1">
         <!-- Navigation Bar -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4 px-4 py-3 rounded">
+        <nav class="navbar navbar-expand-lg navbar-light mb-4 px-4 py-3 rounded">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{% url 'problems:problem_list' %}">⚖️ Nova Judge</a>
+                <a class="navbar-brand" href="{% url 'problems:problem_list' %}">
+                    <i class="fas fa-code me-2"></i>Nova Judge
+                </a>
 
                 <div class="d-flex align-items-center">
                     {% if user.is_authenticated %}
                         <a class="nav-link" href="{% url 'problems:profile' %}">
-                            👋 Hello, <strong>{{ user.username }}</strong>
+                            <i class="fas fa-user me-1"></i> <strong>{{ user.username }}</strong>
                         </a>
-                        <a class="nav-link" href="{% url 'problems:leaderboard' %}">🏆 Leaderboard</a>
-                        <a class="nav-link" href="{% url 'problems:user_submissions' %}">📄 My Submissions</a>
-                        <a class="btn btn-outline-danger ms-2" href="{% url 'logout' %}">Logout</a>
+                        <a class="nav-link" href="{% url 'problems:leaderboard' %}">
+                            <i class="fas fa-trophy me-1"></i> Leaderboard
+                        </a>
+                        <a class="nav-link" href="{% url 'problems:user_submissions' %}">
+                            <i class="fas fa-file-code me-1"></i> Submissions
+                        </a>
+                        <a class="btn btn-outline-danger ms-2" href="{% url 'logout' %}">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </a>
                     {% else %}
-                        <a class="btn btn-outline-primary me-2" href="{% url 'login' %}">Login</a>
-                        <a class="btn btn-primary" href="{% url 'register' %}">Register</a>
+                        <a class="btn btn-outline-primary me-2" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login
+                        </a>
+                        <a class="btn btn-primary" href="{% url 'register' %}">
+                            <i class="fas fa-user-plus me-1"></i> Register
+                        </a>
                     {% endif %}
                 </div>
             </div>
@@ -92,8 +152,30 @@
         {% endif %}
 
         <!-- Main content -->
-        {% block content %}{% endblock %}
+        <div class="animate-fade">
+            {% block content %}{% endblock %}
+        </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <div class="d-flex justify-content-center mb-3">
+                <a href="#" class="text-decoration-none mx-3 text-dark">
+                    <i class="fas fa-question-circle me-1"></i> Help
+                </a>
+                <a href="#" class="text-decoration-none mx-3 text-dark">
+                    <i class="fas fa-envelope me-1"></i> Contact
+                </a>
+                <a href="#" class="text-decoration-none mx-3 text-dark">
+                    <i class="fas fa-info-circle me-1"></i> About
+                </a>
+            </div>
+            <p class="mb-0 text-muted">
+                &copy; {% now "Y" %} Nova Judge. All rights reserved.
+            </p>
+        </div>
+    </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
