@@ -5,16 +5,24 @@
 <div class="homepage-container">
     <!-- Hero Section -->
     <div class="hero-section text-center py-5 mb-5 rounded-3" style="background: linear-gradient(135deg, #6e8efb, #a777e3);">
-        <div class="container py-5">
-            <h1 class="display-3 fw-bold text-white mb-4">Welcome to <span class="text-warning">Nova Judge</span></h1>
-            <p class="lead text-white-50 mb-5">A modern online judge system to sharpen your coding skills</p>
+        <div class="container py-5 position-relative">
+            <!-- Animated floating elements -->
+            <div class="floating-code-icon" style="position: absolute; top: 20%; left: 10%; opacity: 0.1;">
+                <i class="fas fa-code fa-4x"></i>
+            </div>
+            <div class="floating-code-icon" style="position: absolute; bottom: 15%; right: 10%; opacity: 0.1;">
+                <i class="fas fa-bug fa-4x"></i>
+            </div>
+            
+            <h1 class="display-3 fw-bold text-white mb-4 animate__animated animate__fadeInDown">Welcome to <span class="text-warning nova-judge-title">Nova Judge</span></h1>
+            <p class="lead text-white-50 mb-5 animate__animated animate__fadeIn animate__delay-1s">A modern online judge system to sharpen your coding skills</p>
             
             {% if not user.is_authenticated %}
-            <a href="{% url 'login' %}" class="btn btn-light btn-lg px-4 py-2 fw-bold rounded-pill shadow">
+            <a href="{% url 'login' %}" class="btn btn-light btn-lg px-4 py-2 fw-bold rounded-pill shadow animate__animated animate__fadeInUp animate__delay-1s hover-grow">
                 Start Your Journey <i class="ms-2 fas fa-arrow-right"></i>
             </a>
             {% else %}
-            <a href="{% url 'problems:problem_list' %}" class="btn btn-light btn-lg px-4 py-2 fw-bold rounded-pill shadow">
+            <a href="{% url 'problems:problem_list' %}" class="btn btn-light btn-lg px-4 py-2 fw-bold rounded-pill shadow animate__animated animate__fadeInUp animate__delay-1s hover-grow">
                 Continue Coding <i class="ms-2 fas fa-code"></i>
             </a>
             {% endif %}
@@ -22,9 +30,9 @@
     </div>
 
     <!-- Features Section -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3">
+    <div class="row g-4 mb-5 features-row">
+        <div class="col-md-4 animate__animated animate__fadeInLeft">
+            <div class="card h-100 border-0 shadow-sm rounded-3 feature-card hover-float">
                 <div class="card-body p-4 text-center">
                     <div class="feature-icon mb-4">
                         <i class="fas fa-bolt fa-3x text-primary"></i>
@@ -35,8 +43,8 @@
             </div>
         </div>
         
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3">
+        <div class="col-md-4 animate__animated animate__fadeInUp">
+            <div class="card h-100 border-0 shadow-sm rounded-3 feature-card hover-float">
                 <div class="card-body p-4 text-center">
                     <div class="feature-icon mb-4">
                         <i class="fas fa-trophy fa-3x text-warning"></i>
@@ -47,8 +55,8 @@
             </div>
         </div>
         
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3">
+        <div class="col-md-4 animate__animated animate__fadeInRight">
+            <div class="card h-100 border-0 shadow-sm rounded-3 feature-card hover-float">
                 <div class="card-body p-4 text-center">
                     <div class="feature-icon mb-4">
                         <i class="fas fa-layer-group fa-3x text-success"></i>
@@ -61,21 +69,21 @@
     </div>
 
     <!-- CTA Section -->
-    <div class="text-center py-5 px-3 mb-4 rounded-3" style="background-color: #f8f9fa;">
-        <h2 class="fw-bold mb-4">Ready to Challenge Yourself?</h2>
-        <p class="lead mb-5">Join thousands of developers improving their skills on Nova Judge every day.</p>
+    <div class="text-center py-5 px-3 mb-4 rounded-3 cta-section" style="background-color: #f8f9fa;">
+        <h2 class="fw-bold mb-4 animate__animated animate__fadeIn">Ready to Challenge Yourself?</h2>
+        <p class="lead mb-5 animate__animated animate__fadeIn animate__delay-1s">Join thousands of developers improving their skills on Nova Judge every day.</p>
         
         {% if not user.is_authenticated %}
         <div class="d-flex justify-content-center gap-3">
-            <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-4 py-2 rounded-pill shadow">
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-4 py-2 rounded-pill shadow hover-grow animate__animated animate__fadeInLeft animate__delay-2s">
                 Login <i class="ms-2 fas fa-sign-in-alt"></i>
             </a>
-            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg px-4 py-2 rounded-pill">
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg px-4 py-2 rounded-pill hover-grow animate__animated animate__fadeInRight animate__delay-2s">
                 Register <i class="ms-2 fas fa-user-plus"></i>
             </a>
         </div>
         {% else %}
-        <a href="{% url 'problems:problem_list' %}" class="btn btn-primary btn-lg px-4 py-2 rounded-pill shadow">
+        <a href="{% url 'problems:problem_list' %}" class="btn btn-primary btn-lg px-4 py-2 rounded-pill shadow hover-grow animate__animated animate__fadeIn animate__delay-2s">
             Browse Problems <i class="ms-2 fas fa-arrow-right"></i>
         </a>
         {% endif %}
@@ -83,10 +91,12 @@
 </div>
 
 <style>
+    /* Base Styles */
     .hero-section {
         background-size: cover;
         position: relative;
         overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
     
     .hero-section::before {
@@ -110,13 +120,137 @@
         animation: fadeIn 0.8s ease-out;
     }
     
+    /* Animations */
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    /* Floating code icons animation */
+    .floating-code-icon {
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    /* Hover effects */
+    .hover-grow {
+        transition: all 0.3s ease;
+    }
+    
+    .hover-grow:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .hover-float {
+        transition: all 0.3s ease;
+    }
+    
+    .hover-float:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Feature cards */
+    .feature-card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    /* Nova Judge title animation */
+    .nova-judge-title {
+        display: inline-block;
+        position: relative;
+    }
+    
+    .nova-judge-title::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        transform: scaleX(0);
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background-color: #ffc107;
+        transform-origin: bottom right;
+        transition: transform 0.5s ease-out;
+    }
+    
+    .nova-judge-title:hover::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+    }
+    
+    /* CTA section enhancements */
+    .cta-section {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-section::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(110, 142, 251, 0.05) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+        z-index: 0;
+    }
+    
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .hero-section .display-3 {
+            font-size: 2.5rem;
+        }
+        
+        .features-row .col-md-4 {
+            animation: none !important;
+        }
     }
 </style>
 
 <!-- Font Awesome for icons -->
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<!-- Animate.css for animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<!-- Initialize animations when elements are in view -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate features when they come into view
+        const features = document.querySelectorAll('.feature-card');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate__animated', 'animate__pulse');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        features.forEach(feature => {
+            observer.observe(feature);
+        });
+    });
+</script>
 
 {% endblock %}
